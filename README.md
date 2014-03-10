@@ -1,4 +1,4 @@
 PHPDIY
 ======
 
-一个 PHP MVC 框架
+一个较早期写的 PHP MVC 框架
