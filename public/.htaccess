@@ -1,0 +1,17 @@
+SetEnv APPLICATION_ENV development
+RewriteEngine On
+
+#api的访问
+RewriteCond %{REQUEST_URI} ^/api/* [NC]
+RewriteRule ^.*$ api/index.php [NC,L]
+
+#web资源的访问
+RewriteCond %{REQUEST_FILENAME} -s [OR]
+RewriteCond %{REQUEST_FILENAME} -l [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+#RewriteCond %{REQUEST_URI} ^.*(.css|.js|.gif|.png|.jpg|.jpeg|.mp3)$
+
+#默认访问
+RewriteRule ^.*$ - [NC,L]
+RewriteRule ^.*$ index.php [NC,L]
+        

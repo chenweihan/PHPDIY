@@ -1,0 +1,9 @@
+writer:Chen Wei Han  time:2011-8-3
+
+此调试结合firePHP调试工具
+使用firefox浏览器才能看到效果
+
+使用：
+引入debug.php
+安装firephp
+打开firefox

@@ -1,0 +1,48 @@
+1:RBAC总共由6张表构成
+  用户表
+  角色表
+  对象表
+  操作表
+  许可表
+  角色许可对应表
+
+  用户--》登陆--》session通过--》获取角色资格--》查找对应许可--》判断--》是否具有权限
+
+
+ 假设：phpdiyuser用户，下面是分部查找对应的权限
+
+ //获取用户角色 [用户表 一对一  一个用户对应一个角色]
+ SELECT user_role FROM phpdiy_users_rbac  WHERE user_name = 'phpdiyuser';
+
+ //获取是否开启角色权限[角色表]
+ SELECT role_id,role_off FROM phpdiy_roles_rbac  WHERE role_id = user_role
+
+ //获取授权关联[授权角色表 一对多   一个角色对应多个授权]
+ SELECT auth_permissions FROM phpdiy_auth_rbac WHERE auth_role = role_id
+
+ //获取授权角色许可[许可表 一对一   一个对象对应一个操作]
+ SELECT per_object,per_operations FROM phpdiy_permissions_rbac WHERE per_id = auth_permissions
+
+ //获取操作权限[操作权限表]
+ SELECT oper_int  FROM phpdiy_operations__rbac WHERE oper_id = per_operations
+
+ //获取对象资源[对象表]
+ SELECT role_name,role_id FROM phpdiy_roles_rbac WHERE role_off = 1
+
+
+ 简化成一个联表查询，即可查询出一个角色对应的资源及执行权限
+ SELECT b.object_name,o.oper_id,b.object_type
+ FROM phpdiy_permissions_rbac AS p 
+ LEFT JOIN phpdiy_operations_rbac AS o ON o.oper_id = p.per_operations
+ LEFT JOIN phpdiy_objects_rbac AS b ON b.object_id = p.per_object AND object_domains = 1
+ WHERE p.per_id IN (SELECT auth_permissions FROM phpdiy_auth_rbac WHERE auth_role = 4)
+
+
+ 现在可以把每种角色对应的资源及权限读取到缓存页面中，使用数组装起来，只需要查询一遍即可
+
+ 循环角色表执行sql即可
+
+
+
+ 具体相关权限处理在ACL目录
+

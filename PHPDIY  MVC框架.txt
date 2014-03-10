@@ -1,0 +1,173 @@
+﻿PHPDIYv1.0 MVC框架说明  writer:chenweihan time:2011.06.21 
+PHPDIYv1.1 MVC框架说明  writer:chenweihan time:2011.07.20
+PHPDIYv1.1 MVC框架说明  writer:chenweihan time:2011.07.25
+PHPDIYv1.1 MVC框架说明  writer:chenweihan time:2011.07.27
+PHPDIYv1.1 MVC框架说明  writer:chenweihan time:2011.08.04
+PHPDIYv1.1 MVC框架说明  writer:chenweihan time:2011.08.07
+PHPDIYv1.1 MVC框架说明  writer:chenweihan time:2011.08.09
+PHPDIYv1.1 MVC框架说明  writer:chenweihan time:2011.08.15
+PHPDIYv1.1 MVC框架说明  writer:chenweihan time:2011.08.16
+PHPDIYv1.1 MVC框架说明  writer:chenweihan time:2011.08.17
+PHPDIYv1.1 MVC框架说明  writer:chenweihan time:2011.08.18
+PHPDIYv1.1 MVC框架说明  writer:chenweihan time:2011.08.23
+PHPDIYv1.1 MVC框架说明  writer:chenweihan time:2011.08.24
+PHPDIYv1.1 MVC框架说明  writer:chenweihan time:2011.08.25
+PHPDIYv1.1 MVC框架说明  writer:chenweihan time:2011.08.30
+PHPDIYv1.1 MVC框架说明  writer:chenweihan time:2011.10.26
+作者blog:http://csq-3.blog.163.com
+
+随后更新：错误机制【结合firephp】,amf, api机制【命名空间，日志记录】
+
+备注：1：权限控制中资源的请求和控制
+      如果资源需要有权限，则rewrite中唯一指向index.php，需要把资源的目录配置出来，加入前端控制器执行RBAC
+      2：api的权限与网站又不同，独立存在，请求的参数可以定义私钥签名认证【需要用户名和私钥，不在需要密码】，也方便日后支付交易
+      3：RBAC中对象的分类为api和website两类资源
+      4：错误机制主要是404等跳转
+
+
+blog:http://csq-3.blog.163.com
+
+实现功能：
+
+1:采用MVC结构,面向对象开发[整体结构类似zendframework]
+
+2:实现单一入口
+
+3:实现前端控制器
+
+4:实现modules多项目多模块，方便项目扩展 空模块默认为home
+
+5:封装了参数获取
+
+6:封装了URL路径
+eg:http://127.0.0.1/phpdiy/public/home/user/index/id/1/name/cwh
+   域名：http://127.0.0.1/phpdiy/public      public为www目录       
+   目录路径：/phpdiy/public
+   模块:home
+   类名:user
+   方法名:index
+   参数1：id
+   值1：1
+   参数2：name
+   值2:cwh
+也可以这样写
+eg:http://127.0.0.1/phpdiy/public/home/user/index?id=1&name=cwh
+也可以获取值
+
+7:controller控制器自动加载对应的model类 建立映射关系
+名称必须对应一致
+eg: UserController.php--->UserModel.php
+特殊情况，可以手动引入其他model类
+
+如果存在对应的model类，则自动调用对应model实例类 
+
+controller控制器内调用model
+eg:$this->M->fetch() 即可
+
+controller控制器内参数获取 
+   对象 $this->R , 提供下面四种方法
+eg:$this->R->postparam('id');
+   $this->R->getparam('id');
+   $this->R->cookieparam('id');
+   $this->R->allparam('id');
+   问号后面的参数需要下面函数或者allparam才能获取
+   $this->R->getrealparam('id'); 
+   
+controller控制器内Smarty调用
+   eg:$this->S->display();   
+
+8:数据库使用pdo
+
+9:模版集成了smarty模版
+
+10:扩展了smarty，使其支持layout机制
+
+11:指定目录中类自动加载(目前暂时包括 model class phpdiy\frontcontroller)
+
+12:实现插件机制，可自定义制作插件
+   eg:plus/deomplus.php 然后在配置deomplus到config/config.php中
+   这样就注册进了插件的实例数组，使用的时候，直接$P->getplus(类名)就可以得到类的实例
+   注意：静态类不需要new，建议不使用插件方式调用
+
+13：实现监控页面执行时间和sql执行时间的监控系统
+
+14：单元测试工具simpletest支持使用
+
+15：封装memcache使用及管理机制 【目前使用插件模式】
+
+16：更新了监控系统新功能集成了firefox插件firephp调试
+
+17：增加了session保存数据库的功能 ，独立处理，完善了单点登陆机制
+
+18：增加了RBAC权限控制功能 ，完善了模块级到页面级，甚至页面操作类型级的权限控制
+
+19：封装了js动态加载css,js等文件，简单列了js架构规范
+
+20：在jquery的基础在进一步封装了ajax，让ajax更加强大，请求更灵活
+
+21: 增加了RBAC权限ACL列表实现缓存功能，避免权限反复的验证查询多次数据库
+
+22: RBAC权限进一步优化，配置方便
+
+23: 错误机制处理
+
+24: api权限，日志，调用机制
+
+25: 电子密保卡功能
+
+
+--app
+  --model    【数据模型】
+  --modules  【多模块】
+  --plus     【自定义插件库，全局对象，直接使用 $P->getplus(类名)】
+  --view     【视图】
+  --i18n     【语言】
+  --class    【自定义类库，非全局对象，需要手工实例】
+--api        【api库，待完善API机制】
+--config     【配置】
+--lib        【结构核心库：基类，前端控制器，smarty类】
+--db         【文本数据库目录 sqlite等】
+--public     【虚拟目录,网络资源存放,js,style,pic】
+  --js
+  --css
+  --images
+  --api       
+
+
+
+注意：需要开启rewriter功能
+
+如果：虚拟目录设置为public，则域名等于http://127.0.0.1/phpdiy/public/
+
+测试1：http://127.0.0.1/phpdiy/public/
+
+测试2: http://127.0.0.1/phpdiy/public/home/
+
+获取参数  插件调用
+测试3: http://127.0.0.1/phpdiy/public/home/index/test/id/1
+
+smarty layout机制 
+测试4：http://127.0.0.1/phpdiy/public/home/user/layout/id/1
+
+数据库一般查询
+测试5：http://127.0.0.1/phpdiy/public/home/user/dbtest
+
+数据库一般更新等
+测试6：http://127.0.0.1/phpdiy/public/home/user/dbupdatetest
+
+数据库预编译查询等
+测试7：http://127.0.0.1/phpdiy/public/home/user/dbpretest
+
+数据库预编译更新等
+测试8：http://127.0.0.1/phpdiy/public/home/user/dbpreupdatetest
+
+数据库测试SESSION 需要导入SESSION库和表
+测试9：http://127.0.0.1/phpdiy/public/home/user/dbsession
+
+js，css等ajax测试
+测试10：http://127.0.0.1/phpdiy/public/admin
+
+密保卡测试
+测试11：http://127.0.0.1/phpdiy/public/home/index/passcard
+
+ 
